@@ -1,5 +1,5 @@
 # freqListsLemmatized
-Frequency lists for different languages, lemmatized.
+Frequency lists for different languages, lemmatized. The first word in each line is the lemma, all other words are forms. The lemmas are ordered by the frequency of the most common form.
 
 The lists are available under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license. They are based on [Hermit Dave's frequency lists](https://github.com/hermitdave/FrequencyWords) and have been lemmatized using the [SpaCy lemmatizer](https://spacy.io/api/lemmatizer/).
 
