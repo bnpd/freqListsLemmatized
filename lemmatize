@@ -1,0 +1,55 @@
+#!/usr/bin/python
+# Generate a new frequency list with one lemma per line from a frequency list with one word per line
+
+#lang_model="_core_news_sm" # missing the lang code as prefix: it/da/de/en/fr/es... Languages have to be downloaded first:  python -m spacy download xx_core_news_sm
+output_file_prefix="/home/benjamin/Desktop/lemmatize/" # output file will be prefix.lang_code.suffix
+output_file_suffix=".txt"
+threshold=20000 #ignore words which rank less than this threshold (only consider the x most common words)
+
+import sys
+import os
+import spacy
+from spacy.lang.it.examples import sentences
+
+# Check argcount
+if len(sys.argv)!=4:
+	print("Usage: lemmatize lang_code freq_list lang_model")
+	sys.exit(2)
+
+# Check file exists
+if not os.path.isfile(sys.argv[2]):
+	print("Not a file: " + sys.argv[2])
+	sys.exit(-1)
+
+lang_code = sys.argv[1]
+lang_model = sys.argv[3]
+nlp = spacy.load(lang_code+lang_model)
+
+# Read file line by line
+file = open(sys.argv[2])
+lemmas = []
+progress = 0
+for i, line in enumerate(file):
+	if i%(threshold/10)==0:
+		print("Progress: " + str(progress) + "0%")
+		progress+=1
+	if i==threshold:
+		break
+	split = line.split(" ") # Split at space and take first part (the word)
+	if len(split)!=2:
+		continue
+	word = split[0]
+	freq = split[1]
+	processed = nlp(word)[0]
+	#print(processed.lemma_, "|", processed.text, processed.pos_, freq)
+	for j, item in enumerate(lemmas):
+		if item.startswith(processed.lemma_):
+			lemmas[j]+= " " + word
+			break
+	else:
+		lemmas.append(processed.lemma_ + " " + word)
+file.close()
+
+with open(output_file_prefix+lang_code+output_file_suffix, 'w') as f:
+    for item in lemmas:
+        f.write("%s\n" % item)
